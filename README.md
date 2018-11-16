@@ -1,8 +1,7 @@
-[![Build Status](https://travis-ci.com/sequitur-g2p/sequitur-g2p.svg?branch=master)](https://travis-ci.com/sequitur-g2p/sequitur-g2p)
-Sequitur G2P
+Sequitur G2P Lite
 ============
 
-A trainable Grapheme-to-Phoneme converter.
+A Grapheme-to-Phoneme converter that uses a trained model.
 
 Introduction
 ------------
