@@ -1,0 +1,13 @@
+Windows:
+---------
+Run the following commands (replace c:\sequitur-g2p\ with install dir):
+
+set PYTHONPATH C:\sequitur-g2p\lib\site-packages\
+python setup.py install --prefix C:\sequitur-g2p\
+
+Linux:
+---------
+Run the following commands (replace /home/kbickar/dict/sequitur-g2p/ with install dir):
+
+export PYTHONPATH=/home/kbickar/dict/sequitur-g2p/lib/python2.7/site-packages/
+python setup.py install --prefix /home/kbickar/dict/sequitur-g2p
