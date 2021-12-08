@@ -26,8 +26,6 @@ negligent actions or intended actions or fraudulent concealment.
 """
 
 import os
-import numpy
-
 from setuptools import setup, Extension
 from setuptools.command.build_py import build_py as _build_py
 
@@ -80,7 +78,6 @@ sequiturExtension = Extension(
         "SequenceModel.cc",
         "Translation.cc",
     ],
-    include_dirs=[os.path.join(path, "core/include") for path in numpy.__path__],
     extra_compile_args=["-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION"],
 )
 
