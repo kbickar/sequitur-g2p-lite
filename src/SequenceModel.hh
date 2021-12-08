@@ -6,7 +6,7 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License Version 2 (June
  * 1991) as published by the Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, you will find it at
  * http://www.gnu.org/licenses/gpl.html, or write to the Free Software
- * Foundation, Inc., 51 Franlin Street, Fifth Floor, Boston, MA 02110,
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110,
  * USA.
  *
  * Should a provision of no. 9 and 10 of the GNU General Public License
@@ -41,12 +41,12 @@
 
 struct StringHash {
     size_t operator() (const char *s) const {
-	size_t result = 0;
-	while (*s) result = 5 * result + size_t(*s++);
-	return result;
+        size_t result = 0;
+        while (*s) result = 5 * result + size_t(*s++);
+        return result;
     }
     size_t operator() (const std::string &s) const {
-	return (*this)(s.c_str());
+        return (*this)(s.c_str());
     }
 };
 
@@ -54,10 +54,10 @@ struct StringEquality :
     std::binary_function<const char*, const char*, bool>
 {
     bool operator() (const char *s, const char *t) const {
-	return (s == t) || (strcmp(s, t) == 0);
+        return (s == t) || (strcmp(s, t) == 0);
     }
     bool operator() (const std::string &s, const std::string &t) const {
-	return (s == t);
+        return (s == t);
     }
 };
 
@@ -74,28 +74,28 @@ public:
     ~StringInventory();
 
     std::string symbol(u32 i) const {
-	require(i < list_.size());
-	const char *result = list_[i];
-	return (result) ? result : "(void)";
+        require(i < list_.size());
+        const char *result = list_[i];
+        return (result) ? result : "(void)";
     }
 
     u32 findOrAdd(const char *str) {
-	Map::const_iterator wmi = map_.find(str);
-	if (wmi == map_.end()) {
-	    u32 i = list_.size();
-	    const char *myStr = strdup(str);
-	    wmi = map_.insert(std::make_pair(myStr, i)).first;
-	    list_.push_back(myStr);
-	}
-	return wmi->second;
+        Map::const_iterator wmi = map_.find(str);
+        if (wmi == map_.end()) {
+            u32 i = list_.size();
+            const char *myStr = strdup(str);
+            wmi = map_.insert(std::make_pair(myStr, i)).first;
+            list_.push_back(myStr);
+        }
+        return wmi->second;
     }
 
     u32 index(const char *str) {
-	Map::const_iterator wmi = map_.find(str);
-	if (wmi == map_.end()) {
-	    return invalidIndex;
-	} else
-	    return wmi->second;
+        Map::const_iterator wmi = map_.find(str);
+        if (wmi == map_.end()) {
+            return invalidIndex;
+        } else
+            return wmi->second;
     }
 };
 #endif // INSTRUMENTATION

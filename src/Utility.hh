@@ -6,7 +6,7 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License Version 2 (June
  * 1991) as published by the Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, you will find it at
  * http://www.gnu.org/licenses/gpl.html, or write to the Free Software
- * Foundation, Inc., 51 Franlin Street, Fifth Floor, Boston, MA 02110,
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110,
  * USA.
  *
  * Should a provision of no. 9 and 10 of the GNU General Public License
@@ -50,14 +50,14 @@ namespace Core {
      **/
     int getline(std::istream&, std::string&, std::string delim = "\n");
     inline int wsgetline(std::istream &is, std::string &str, std::string delim = "\n") {
-	is >> std::ws;
-	return Core::getline(is, str, delim);
+        is >> std::ws;
+        return Core::getline(is, str, delim);
     }
 
     std::string& itoa(std::string &s, unsigned int val);
     inline std::string itoa(u32 i) {
-	std::string s;
-	return itoa(s, i);
+        std::string s;
+        return itoa(s, i);
     }
 
 } // namespace Core
@@ -65,7 +65,7 @@ namespace Core {
 inline size_t __stl_hash_wstring(const wchar_t* __s) {
     unsigned long __h = 0;
     for ( ; *__s; ++__s)
-	__h = 5*__h + *__s;
+        __h = 5*__h + *__s;
 
     return size_t(__h);
 }
@@ -75,31 +75,31 @@ namespace Core {
     /** Generic unary functor for type conversion. */
     template <typename S, typename T>
     struct conversion :
-	public std::unary_function<S, T>
+        public std::unary_function<S, T>
     {
-	T operator() (S s) const {
-	    return T(s);
-	}
+        T operator() (S s) const {
+            return T(s);
+        }
     };
 
     /** A helper for conveniently assigning the two values from a pair
      * into separate variables. The idea for this comes from Jaakko
-     * J„rvi's Binder/Lambda Library.  Code stolen from Boost, to
-     * which it was constributed by Jeremy Siek */
+     * Jarvi's Binder/Lambda Library.  Code stolen from Boost, to
+     * which it was contributed by Jeremy Siek */
 
     template <class A, class B>
     class tied {
     public:
-	inline tied(A &a, B &b) : a_(a), b_(b) { }
-	template <class U, class V>
-	inline tied& operator=(const std::pair<U,V> &p) {
-	    a_ = p.first;
-	    b_ = p.second;
-	    return *this;
-	}
+        inline tied(A &a, B &b) : a_(a), b_(b) { }
+        template <class U, class V>
+        inline tied& operator=(const std::pair<U,V> &p) {
+            a_ = p.first;
+            b_ = p.second;
+            return *this;
+        }
     protected:
-	A &a_;
-	B &b_;
+        A &a_;
+        B &b_;
     };
 
     template <class A, class B>
@@ -125,9 +125,9 @@ namespace Core {
      */
     template<class InputIterator>
     bool isNormal(InputIterator begin, InputIterator end) {
-	for(; begin != end; ++ begin)
-	    if (!std::isnormal(*begin)) return false;
-	return true;
+        for(; begin != end; ++ begin)
+            if (!std::isnormal(*begin)) return false;
+        return true;
     }
 
     /**
@@ -142,10 +142,10 @@ namespace Core {
     template<class T>
     T clip(T x)
     {
-	require(!std::isnan(x));
-	if (std::isinf(x))
-	    x = (x > 0) ? Type<T>::max : Type<T>::min;
-	return x;
+        require(!std::isnan(x));
+        if (std::isinf(x))
+            x = (x > 0) ? Type<T>::max : Type<T>::min;
+        return x;
     }
 
     /**
@@ -153,34 +153,34 @@ namespace Core {
      */
     template<class InputIterator>
     bool isMalformed(InputIterator begin, InputIterator end) {
-	for(; begin != end; ++ begin)
-	    if (isMalformed(*begin)) return true;
-	return false;
+        for(; begin != end; ++ begin)
+            if (isMalformed(*begin)) return true;
+        return false;
     }
 
     /** Functor for f(g(x), h(y)) */
     template <class F, class G, class H>
     class composedBinaryFunction
-	: public std::binary_function<typename G::argument_type,
-				      typename H::argument_type,
-				      typename F::result_type>
+        : public std::binary_function<typename G::argument_type,
+                                      typename H::argument_type,
+                                      typename F::result_type>
     {
     protected:
-	F f_;
-	G g_;
-	H h_;
+        F f_;
+        G g_;
+        H h_;
     public:
-	composedBinaryFunction(const F &f, const G &g, const H &h) : f_(f), g_(g), h_(h) {}
-	typename F::result_type
-	operator()(const typename G::argument_type &x, const typename H::argument_type &y) const {
-	    return f_(g_(x), h_(y));
-	}
+        composedBinaryFunction(const F &f, const G &g, const H &h) : f_(f), g_(g), h_(h) {}
+        typename F::result_type
+        operator()(const typename G::argument_type &x, const typename H::argument_type &y) const {
+            return f_(g_(x), h_(y));
+        }
     };
 
     template <class F, class G, class H>
     inline composedBinaryFunction<F, G, H> composeBinaryFunction(const F &f, const G &g, const H &h)
     {
-	return composedBinaryFunction<F, G, H>(f, g, h);
+        return composedBinaryFunction<F, G, H>(f, g, h);
     }
 
     /**
@@ -201,41 +201,41 @@ namespace Core {
      *    seems to be a hard nut with templates.
      */
     inline bool isAlmostEqual(f32 a, f32 b, f32 tolerance = (f32)1) {
-	require_(tolerance > (f32)0);
-	f32 d = std::abs(a - b);
-	f32 e = (std::abs(a) + std::abs(b) + Type<f32>::delta) * Type<f32>::epsilon * tolerance;
-	return (d < e);
+        require_(tolerance > (f32)0);
+        f32 d = std::abs(a - b);
+        f32 e = (std::abs(a) + std::abs(b) + Type<f32>::delta) * Type<f32>::epsilon * tolerance;
+        return (d < e);
     }
     inline bool isAlmostEqual(f64 a, f64 b, f64 tolerance = (f64)1) {
-	require_(tolerance > (f64)0);
-	f64 d = std::abs(a - b);
-	f64 e = (std::abs(a) + std::abs(b) + Type<f64>::delta) * Type<f64>::epsilon * tolerance;
-	return (d < e);
+        require_(tolerance > (f64)0);
+        f64 d = std::abs(a - b);
+        f64 e = (std::abs(a) + std::abs(b) + Type<f64>::delta) * Type<f64>::epsilon * tolerance;
+        return (d < e);
     }
 
     inline bool isAlmostEqual(const std::complex<f32> &a, const std::complex<f32> &b,
-			      const std::complex<f32> tolerance = std::complex<f32>((f32)1, (f32)1)) {
-	return (isAlmostEqual(a.real(), b.real(), tolerance.real())  &&
-		isAlmostEqual(a.imag(), b.imag(), tolerance.imag()));
+                              const std::complex<f32> tolerance = std::complex<f32>((f32)1, (f32)1)) {
+        return (isAlmostEqual(a.real(), b.real(), tolerance.real())  &&
+                isAlmostEqual(a.imag(), b.imag(), tolerance.imag()));
     }
     inline bool isAlmostEqual(const std::complex<f64> &a, const std::complex<f64> &b,
-			      const std::complex<f64> tolerance = std::complex<f64>((f64)1, (f64)1)) {
-	return (isAlmostEqual(a.real(), b.real(), tolerance.real())  &&
-		isAlmostEqual(a.imag(), b.imag(), tolerance.imag()));
+                              const std::complex<f64> tolerance = std::complex<f64>((f64)1, (f64)1)) {
+        return (isAlmostEqual(a.real(), b.real(), tolerance.real())  &&
+                isAlmostEqual(a.imag(), b.imag(), tolerance.imag()));
     }
 
     inline bool isSignificantlyGreater(f32 a, f32 b, f32 tolerance = (f32)1) {
-	return a > b && !isAlmostEqual(a, b, tolerance);
+        return a > b && !isAlmostEqual(a, b, tolerance);
     }
     inline bool isSignificantlyGreater(f64 a, f64 b, f64 tolerance = (f64)1) {
-	return a > b && !isAlmostEqual(a, b, tolerance);
+        return a > b && !isAlmostEqual(a, b, tolerance);
     }
 
     inline bool isSignificantlyLess(f32 a, f32 b, f32 tolerance = (f32)1) {
-	return a < b && !isAlmostEqual(a, b, tolerance);
+        return a < b && !isAlmostEqual(a, b, tolerance);
     }
     inline bool isSignificantlyLess(f64 a, f64 b, f64 tolerance = (f64)1) {
-	return a < b && !isAlmostEqual(a, b, tolerance);
+        return a < b && !isAlmostEqual(a, b, tolerance);
     }
 
     /**
@@ -264,41 +264,32 @@ namespace Core {
      * thought of as the number of different normalized floating point
      * numbers between @c a and @c b.
      *
-     * This method is preferrable to the older isAlmostEqual(),
+     * This method is preferable to the older isAlmostEqual(),
      * because it is faster and theoretically more sound.  So maybe
      * isAlmostEqual() should be removed some time.
      */
     inline bool isAlmostEqualUlp(f32 a, f32 b, s32 tolerance) {
-	require_(tolerance > 0);
-	require_(tolerance < 0x400000);
-	return (differenceUlp(a, b) <= tolerance);
+        require_(tolerance > 0);
+        require_(tolerance < 0x400000);
+        return (differenceUlp(a, b) <= tolerance);
     }
     inline bool isAlmostEqualUlp(f64 a, f64 b, s64 tolerance) {
-	require_(tolerance > 0);
-	require_(tolerance < (s64(1) << 62));
-	return (differenceUlp(a, b) <= tolerance);
+        require_(tolerance > 0);
+        require_(tolerance < (s64(1) << 62));
+        return (differenceUlp(a, b) <= tolerance);
     }
     inline bool isAlmostEqualUlp(f64 a, f64 b, s32 tolerance) {
-	return isAlmostEqualUlp(a, b, s64(tolerance));
+        return isAlmostEqualUlp(a, b, s64(tolerance));
     }
 
     inline bool isSignificantlyLessUlp(f32 a, f32 b, s32 tolerance) {
-	return a < b && !isAlmostEqualUlp(a, b, tolerance);
+        return a < b && !isAlmostEqualUlp(a, b, tolerance);
     }
     inline bool isSignificantlyLessUlp(f64 a, f64 b, s32 tolerance) {
-	return a < b && !isAlmostEqualUlp(a, b, tolerance);
+        return a < b && !isAlmostEqualUlp(a, b, tolerance);
     }
 
 } // namespace Core
 
-
-/**
- * This seems to be obsolete for GCC >= 3.3.4
- */
-#include <functional>
-namespace std {
-    template <class _Pair> struct select1st : public std::_Select1st<_Pair> {};
-    template <class _Pair> struct select2nd : public std::_Select2nd<_Pair> {};
-}
 
 #endif // _CORE_UTILITY_HH

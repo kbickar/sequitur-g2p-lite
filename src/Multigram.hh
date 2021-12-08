@@ -6,7 +6,7 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License Version 2 (June
  * 1991) as published by the Free Software Foundation.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, you will find it at
  * http://www.gnu.org/licenses/gpl.html, or write to the Free Software
- * Foundation, Inc., 51 Franlin Street, Fifth Floor, Boston, MA 02110,
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110,
  * USA.
  *
  * Should a provision of no. 9 and 10 of the GNU General Public License
@@ -30,7 +30,7 @@
 #include "Python.hh"
 
 #include <vector>
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
+#if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L) || (__APPLE__) || (_MSC_VER)
 #include <unordered_map>
 using std::unordered_map;
 #else
@@ -146,7 +146,7 @@ class MultigramInventory {
     }
 
     /** Number of multigrams not including VOID */
-    u32 size() const {
+    size_t size() const {
       return list_.size() - 1;
     }
 
@@ -171,7 +171,7 @@ class MultigramInventory {
     }
 
     size_t memoryUsed() const {
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) 
+#if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L) || (__APPLE__) || (_MSC_VER)
       struct MapNode { Map::value_type value; bool cond;};
 #elif __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3)
       typedef std::tr1::__detail::_Hash_node<Map::value_type, false> MapNode;

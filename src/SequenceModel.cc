@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, you will find it at
  * http://www.gnu.org/licenses/gpl.html, or write to the Free Software
- * Foundation, Inc., 51 Franlin Street, Fifth Floor, Boston, MA 02110,
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110,
  * USA.
  *
  * Should a provision of no. 9 and 10 of the GNU General Public License
@@ -305,7 +305,11 @@ SequenceModel::History SequenceModel::initial() const {
 
 SequenceModel::History SequenceModel::advanced(const Node *old, Token w) const {
   require_(old);
+#ifdef _MSC_VER
+  Token *hist = new Token[old->depth() + 1];
+#else
   Token hist[old->depth() + 1];
+#endif
   for (const Node *n = old; n; n = n->parent())
     hist[n->depth()] = n->token();
   verify(!hist[0]);
@@ -318,6 +322,9 @@ SequenceModel::History SequenceModel::advanced(const Node *old, Token w) const {
     result = n;
   }
   ensure(result);
+#ifdef _MSC_VER
+  delete[] hist;
+#endif
   return result;
 }
 
@@ -463,7 +470,7 @@ void SequenceModel::set(PyObject *obj) {
   if (!PySequence_Check(obj))
     throw PythonException(PyExc_TypeError, "not a sequence");
 
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L)
+#if defined(__GXX_EXPERIMENTAL_CXX0X__) || (__cplusplus >= 201103L) || (__APPLE__)
   std::shared_ptr<InitData> data(new InitData);
 #else
   std::auto_ptr<InitData> data(new InitData);
