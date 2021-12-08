@@ -1,14 +1,14 @@
 from __future__ import division, print_function
 
-__author__    = 'Maximilian Bisani'
-__version__   = '$LastChangedRevision: 1668 $'
-__date__      = '$LastChangedDate: 2007-06-02 18:14:47 +0200 (Sat, 02 Jun 2007) $'
-__copyright__ = 'Copyright (c) 2004-2005  RWTH Aachen University'
-__license__   = """
+__author__ = "Maximilian Bisani"
+__version__ = "$LastChangedRevision: 1668 $"
+__date__ = "$LastChangedDate: 2007-06-02 18:14:47 +0200 (Sat, 02 Jun 2007) $"
+__copyright__ = "Copyright (c) 2004-2005  RWTH Aachen University"
+__license__ = """
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License Version 2 (June
 1991) as published by the Free Software Foundation.
- 
+
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -17,9 +17,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, you will find it at
 http://www.gnu.org/licenses/gpl.html, or write to the Free Software
-Foundation, Inc., 51 Franlin Street, Fifth Floor, Boston, MA 02110,
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110,
 USA.
- 
+
 Should a provision of no. 9 and 10 of the GNU General Public License
 be invalid or become invalid, a valid provision is deemed to have been
 agreed upon which comes closest to what the parties intended
@@ -29,8 +29,15 @@ negligent actions or intended actions or fraudulent concealment.
 
 from sequitur_ import align
 
+try:
+    unicode
+except NameError:
+    # In Python 3:
+    unicode = str
+
+
 class Result:
-    def __init__(self, name = None, tableFile = None):
+    def __init__(self, name=None, tableFile=None, print_header=False):
         self.name = name
         self.tableFile = tableFile
         self.nStringsTranslated = 0
@@ -41,20 +48,36 @@ class Result:
         self.nDeletions = 0
         self.nSubstitutions = 0
         self.nStringErrors = 0
-        if self.tableFile:
-            row = [ column for column, var in self.tableFormat if column is not None ]
-            print(u'\t'.join(row), self.tableFile)
+        if self.tableFile and print_header:
+            print(self.build_row(True), file=self.tableFile)
 
-    tableFormat = [
-        (None,      '"".join(source)'),
-        ('weight',  'weight'),
-        ('symbols', 'nSymbols'),
-        ('ins',     'nInsertions'),
-        ('del',     'nDeletions'),
-        ('sub',     'nSubstitutions'),
-        ('err',     'nStringErrors')]
+    def build_row(
+        self,
+        header,
+        source=tuple(),
+        weight=None,
+        nSymbols=None,
+        nInsertions=None,
+        nDeletions=None,
+        nSubstitutions=None,
+        nStringErrors=None,
+    ):
+        tableFormat = [
+            ("entry", "".join(source)),
+            ("weight", weight),
+            ("symbols", nSymbols),
+            ("ins", nInsertions),
+            ("del", nDeletions),
+            ("sub", nSubstitutions),
+            ("err", nStringErrors),
+        ]
+        if header:
+            row = [unicode(column) for column, var in tableFormat]
+        else:
+            row = [unicode(var) for column, var in tableFormat]
+        return u"\t".join(row)
 
-    def accu(self, source, reference, candidate, alignment, errors, weight = 1):
+    def accu(self, source, reference, candidate, alignment, errors, weight=1):
         self.nStringsTranslated += weight
         if errors > 0:
             self.nStringErrors += weight
@@ -64,8 +87,8 @@ class Result:
         nSymbols = len(reference) * weight
         self.nSymbolsTranslated += nSymbols
 
-        nInsertions    = 0
-        nDeletions     = 0
+        nInsertions = 0
+        nDeletions = 0
         nSubstitutions = 0
         for ss, rr in alignment:
             if ss is None:
@@ -78,42 +101,53 @@ class Result:
                 pass
             else:
                 nSubstitutions += weight
-        self.nInsertions    += nInsertions
-        self.nDeletions     += nDeletions
+        self.nInsertions += nInsertions
+        self.nDeletions += nDeletions
         self.nSubstitutions += nSubstitutions
 
         if self.tableFile:
-            row = [ unicode(eval(var)) for column, var in self.tableFormat ]
-            print(u'\t'.join(row), file=self.tableFile)
+            row = self.build_row(
+                False,
+                source=source,
+                weight=weight,
+                nSymbols=nSymbols,
+                nInsertions=nInsertions,
+                nDeletions=nDeletions,
+                nSubstitutions=nSubstitutions,
+                nStringErrors=nStringErrors,
+            )
+            print(row, file=self.tableFile)
 
-    def accuFailure(self, reference, weight = 1):
+    def accuFailure(self, reference, weight=1):
         self.nStringsFailed += weight
         self.nSymbolsFailed += len(reference) * weight
 
     def relativeCount(self, n, total):
         if total:
-            return '%d (%1.2f%%)' % (n, 100.0 * float(n) / float(total))
+            return "%d (%1.2f%%)" % (n, 100.0 * float(n) / float(total))
         else:
-            return '%d (n/a)' % n
+            return "%d (n/a)" % n
 
     stringError = property(
-        lambda self: self.relativeCount(self.nStringsIncorrect, self.nStrings))
+        lambda self: self.relativeCount(self.nStringsIncorrect, self.nStrings)
+    )
     symbolError = property(
-        lambda self: self.relativeCount(self.nSymbolsIncorrect, self.nSymbols))
+        lambda self: self.relativeCount(self.nSymbolsIncorrect, self.nSymbols)
+    )
 
     def __getattr__(self, attr):
-        if attr.startswith('rc:'):
-            n, m = attr[3:].split('/')
+        if attr.startswith("rc:"):
+            n, m = attr[3:].split("/")
             return self.relativeCount(getattr(self, n), getattr(self, m))
-        elif attr == 'nStrings':
+        elif attr == "nStrings":
             return self.nStringsTranslated + self.nStringsFailed
-        elif attr == 'nStringsIncorrect':
+        elif attr == "nStringsIncorrect":
             return self.nStringErrors + self.nStringsFailed
-        elif attr == 'nSymbols':
+        elif attr == "nSymbols":
             return self.nSymbolsTranslated + self.nSymbolsFailed
-        elif attr == 'nSymbolErrors':
+        elif attr == "nSymbolErrors":
             return self.nInsertions + self.nDeletions + self.nSubstitutions
-        elif attr == 'nSymbolsIncorrect':
+        elif attr == "nSymbolsIncorrect":
             return self.nSymbolErrors + self.nSymbolsFailed
         else:
             raise AttributeError(attr)
@@ -142,14 +176,14 @@ def showAlignedResult(source, alignment, errors, out):
     vis = []
     for ss, rr in alignment:
         if ss is None:
-            vis.append('\033[0;32m%s\033[0m' % rr)
+            vis.append("\033[0;32m%s\033[0m" % rr)
         elif rr is None:
-            vis.append('\033[0;31m[%s]\033[0m' % ss)
+            vis.append("\033[0;31m[%s]\033[0m" % ss)
         elif ss == rr:
-            vis.append('%s' % rr)
+            vis.append("%s" % rr)
         else:
-            vis.append('\033[0;31m%s/%s\033[0m' % (rr, ss))
-    print(u'%s\t%s\t(%d errors)' % (''.join(source), ' '.join(vis), errors), file=out)
+            vis.append("\033[0;31m%s/%s\033[0m" % (rr, ss))
+    print(u"%s\t%s\t(%d errors)" % ("".join(source), " ".join(vis), errors), file=out)
 
 
 def collateSample(sample):
@@ -173,7 +207,7 @@ class Evaluator(object):
         self.sources, self.references = collateSample(sample)
 
     def evaluate(self, translator):
-        result = Result(tableFile = self.resultFile)
+        result = Result(tableFile=self.resultFile)
         for source in self.sources:
             references = self.references[source]
             if self.compareFilter:
