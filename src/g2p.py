@@ -32,6 +32,8 @@ be invalid or become invalid, a valid provision is deemed to have been
 agreed upon which comes closest to what the parties intended
 commercially. In any case guarantee/warranty shall be limited to gross
 negligent actions or intended actions or fraudulent concealment.
+
+The full source is available at: https://github.com/kbickar/sequitur-g2p-lite
 """
 
 import math, sys
@@ -143,11 +145,33 @@ def mainApply(translator, options):
                 pass
 
 def mainApplyWord(translator, options):
+    if options.variants_mass or options.variants_number:
+        wantVariants = True
+        threshold = options.variants_mass or 1.0
+        nVariantsLimit = options.variants_number or 1e9
+    else:
+        wantVariants = False
+        
     word = options.applyWord
     left = tuple(word)
     try:
-        result = translator(left)
-        print(('%s\t%s' % (word, ' '.join(result))))
+        if wantVariants:
+            totalPosterior = 0.0
+            nVariants = 0
+            nBest = translator.nBestInit(left)
+            while totalPosterior < threshold and nVariants < nVariantsLimit:
+                try:
+                    logLik, result = translator.nBestNext(nBest)
+                except StopIteration:
+                    break
+                posterior = math.exp(logLik - nBest.logLikTotal)
+                defn = ' '.join(result)
+                print(f"{word}\t{posterior:.3f}\t{defn}")
+                totalPosterior += posterior
+                nVariants += 1
+        else:
+            result = translator(left)
+            print(('%s\t%s' % (word, ' '.join(result))))
     except translator.TranslationFailure:
         exc = sys.exc_info()[1]
         try:
